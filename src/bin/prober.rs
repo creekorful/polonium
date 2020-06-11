@@ -1,5 +1,5 @@
 use std::env;
-use std::io::{Read, Write};
+use std::io::{ErrorKind, Read, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::str;
 use std::str::FromStr;
@@ -20,17 +20,23 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn grab_banner(svc: &str, connect_timeout: Duration, read_timeout: Duration) -> Result<String, failure::Error> {
-    let addr = SocketAddr::from_str(svc)?;
+fn grab_banner(address: &str, connect_timeout: Duration, read_timeout: Duration) -> Result<String, failure::Error> {
+    let address = SocketAddr::from_str(address)?;
 
-    let mut stream = TcpStream::connect_timeout(&addr, connect_timeout)?;
+    let mut stream = TcpStream::connect_timeout(&address, connect_timeout)?;
     stream.set_read_timeout(Option::from(read_timeout))?;
 
     let mut buffer = [0; 512];
 
     // Try to read banner right after connecting
-    if stream.read(&mut buffer).is_ok() {
+    let result = stream.read(&mut buffer);
+    if result.is_ok() {
         return Ok(String::from(str::from_utf8(&buffer)?));
+    }
+
+    let error = result.err().unwrap();
+    if error.kind() != ErrorKind::WouldBlock {
+        return Err(failure::err_msg(error));
     }
 
     // If nothing was returned, send a dummy request

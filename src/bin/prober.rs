@@ -1,15 +1,21 @@
-use std::env;
 use std::io::{ErrorKind, Read, Write};
 use std::net::{SocketAddr, TcpStream};
 use std::str;
 use std::str::FromStr;
 use std::time::Duration;
 
-fn main() -> std::io::Result<()> {
-    // TODO: use CLI framework instead
-    let args: Vec<String> = env::args().collect();
+use clap::{App, Arg};
 
-    let target = args.get(1).expect("target is required");
+fn main() -> std::io::Result<()> {
+    let matches = App::new("Prober")
+        .version("0.0.1")
+        .author("Aloïs Micard <alois@micard.lu>")
+        .about("Probe given address to gather banner details")
+        .arg(Arg::with_name("address").required(true).help("address of the service to be scanned"))
+        .get_matches();
+
+    let target = matches.value_of("address").unwrap();
+
     let connect_timeout = Duration::from_millis(1000);
     let read_timeout = Duration::from_millis(500);
 

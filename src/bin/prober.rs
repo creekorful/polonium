@@ -34,6 +34,8 @@ fn grab_banner(address: &str, connect_timeout: Duration, read_timeout: Duration)
         return Ok(String::from(str::from_utf8(&buffer)?));
     }
 
+    // If timeout related error happens, do not fails
+    // because we may need to talk first
     let error = result.err().unwrap();
     if error.kind() != ErrorKind::WouldBlock {
         return Err(failure::err_msg(error));

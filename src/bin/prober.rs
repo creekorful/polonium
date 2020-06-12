@@ -25,6 +25,11 @@ fn main() -> std::io::Result<()> {
             .value_name("VALUE")
             .default_value("500")
             .help("read timeout (ms)"))
+        .arg(Arg::with_name("write-timeout")
+            .long("write-timeout")
+            .value_name("VALUE")
+            .default_value("500")
+            .help("write timeout (ms)"))
         .get_matches();
 
     let target = matches.value_of("address").unwrap();
@@ -37,18 +42,25 @@ fn main() -> std::io::Result<()> {
     let read_timeout = read_timeout.parse::<u64>().unwrap();
     let read_timeout = Duration::from_millis(read_timeout);
 
+    let write_timeout = matches.value_of("write-timeout").unwrap();
+    let write_timeout = write_timeout.parse::<u64>().unwrap();
+    let write_timeout = Duration::from_millis(write_timeout);
 
-    let banner = grab_banner(target, connect_timeout, read_timeout).expect("unable to grab banner");
+
+    let banner = grab_banner(target, connect_timeout, read_timeout, write_timeout)
+        .expect("unable to grab banner");
     print!("{}", banner);
 
     Ok(())
 }
 
-fn grab_banner(address: &str, connect_timeout: Duration, read_timeout: Duration) -> Result<String, failure::Error> {
+fn grab_banner(address: &str, connect_timeout: Duration,
+               read_timeout: Duration, write_timeout: Duration) -> Result<String, failure::Error> {
     let address = SocketAddr::from_str(address)?;
 
     let mut stream = TcpStream::connect_timeout(&address, connect_timeout)?;
     stream.set_read_timeout(Option::from(read_timeout))?;
+    stream.set_write_timeout(Option::from(write_timeout))?;
 
     let mut buffer = [0; 512];
 

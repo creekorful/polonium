@@ -1,8 +1,9 @@
+use std::process;
 use std::time::Duration;
 
 use clap::{App, Arg};
 
-fn main() -> std::io::Result<()> {
+fn main() {
     let matches = App::new("Prober")
         .version("0.0.1")
         .author("Aloïs Micard <alois@micard.lu>")
@@ -43,9 +44,13 @@ fn main() -> std::io::Result<()> {
     let write_timeout = Duration::from_millis(write_timeout);
 
 
-    let banner = boron::probing::grab_banner(target, connect_timeout, read_timeout, write_timeout)
-        .expect("unable to grab banner");
-    print!("{}", banner);
+    let banner = match boron::probing::grab_banner(target, connect_timeout, read_timeout, write_timeout) {
+        Ok(banner) => banner,
+        Err(e) => {
+            eprintln!("Error while grabbing banner: {}", e);
+            process::exit(1);
+        }
+    };
 
-    Ok(())
+    println!("{}", banner);
 }

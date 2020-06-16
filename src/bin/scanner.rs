@@ -1,3 +1,4 @@
+use std::process;
 use std::time::Duration;
 
 use clap::{App, Arg};
@@ -34,7 +35,14 @@ fn main() {
 
     println!("Scanning target {} on following ports: {:?}", target, ports);
 
-    let open_ports = boron::scanning::scan(target, &ports, connect_timeout).unwrap();
+    let open_ports = match boron::scanning::scan(target, &ports, connect_timeout) {
+        Ok(ports) => ports,
+        Err(e) => {
+            eprintln!("Error while scanning target: {}", e);
+            process::exit(1);
+        }
+    };
+
     for port in open_ports.iter() {
         println!("{}:{} OPEN", target, port)
     }

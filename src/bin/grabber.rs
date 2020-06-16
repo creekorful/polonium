@@ -4,10 +4,10 @@ use std::time::Duration;
 use clap::{App, Arg};
 
 fn main() {
-    let matches = App::new("Prober")
+    let matches = App::new("Grabber")
         .version("0.0.1")
         .author("Aloïs Micard <alois@micard.lu>")
-        .about("Probe given address to gather banner details")
+        .about("Grab given address to gather banner details")
         .arg(Arg::with_name("address")
             .required(true)
             .value_name("ADDRESS:PORT")
@@ -44,7 +44,7 @@ fn main() {
     let write_timeout = Duration::from_millis(write_timeout);
 
 
-    let banner = match boron::probing::grab_banner(target, connect_timeout, read_timeout, write_timeout) {
+    let banner = match boron::grabbing::grab_banner(target, connect_timeout, read_timeout, write_timeout) {
         Ok(banner) => banner,
         Err(e) => {
             eprintln!("Error while grabbing banner: {}", e);

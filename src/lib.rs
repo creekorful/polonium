@@ -1,4 +1,4 @@
-pub mod probing {
+pub mod grabbing {
     use std::io::{ErrorKind, Read, Write};
     use std::net::{SocketAddr, TcpStream};
     use std::str;

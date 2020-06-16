@@ -6,4 +6,7 @@ edition = "2018"
 
 [dependencies]
 failure = "0.1.8"
-clap = "2.33.1"
+
+[dependencies.clap]
+version = "2.33.1"
+default-features = false

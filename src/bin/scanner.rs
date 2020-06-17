@@ -35,6 +35,7 @@ fn main() {
 
     println!("Scanning target {} on following ports: {:?}", target, ports);
 
+    // TODO allow parallel scan?
     let open_ports = match boron::scanning::scan(target, &ports, connect_timeout) {
         Ok(ports) => ports,
         Err(e) => {
@@ -43,6 +44,7 @@ fn main() {
         }
     };
 
+    // TODO display closed port?
     for port in open_ports.iter() {
         println!("{}:{} OPEN", target, port)
     }

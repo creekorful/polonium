@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.5-management-alpine
+    ports:
+      - target: 15672
+        published: 20001
+        protocol: tcp

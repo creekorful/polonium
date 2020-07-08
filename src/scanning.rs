@@ -7,10 +7,7 @@ pub fn scan(address: &str, ports: &[u16], connect_timeout: Duration) -> anyhow::
     for port in ports.iter() {
         let target = format!("{}:{}", address, port);
         let target = SocketAddr::from_str(&target)?;
-        match TcpStream::connect_timeout(&target, connect_timeout) {
-            Ok(_) => open_ports.push(*port),
-            Err(_) => (),
-        }
+        if TcpStream::connect_timeout(&target, connect_timeout).is_ok() { open_ports.push(*port) }
     }
 
     Ok(open_ports)

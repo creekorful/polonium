@@ -19,7 +19,7 @@ pub fn grab_banner(
     let mut buffer = [0; 512];
 
     // Try to read banner right after connecting
-    let result = stream.read(&mut buffer);
+    let result = stream.read_exact(&mut buffer);
     if result.is_ok() {
         return Ok(String::from(str::from_utf8(&buffer)?));
     }
@@ -32,9 +32,9 @@ pub fn grab_banner(
     }
 
     // If nothing was returned, send a dummy request
-    stream.write("HEAD / HTTP/1.1\n\n".as_ref())?;
+    stream.write_all("HEAD / HTTP/1.1\n\n".as_ref())?;
 
     // Try to read again
-    stream.read(&mut buffer)?;
-    return Ok(String::from(str::from_utf8(&buffer)?));
+    stream.read_exact(&mut buffer)?;
+    Ok(String::from(str::from_utf8(&buffer)?))
 }

@@ -61,23 +61,23 @@ fn extract_ports(ports_arg: &str) -> anyhow::Result<Vec<u16>> {
 
     // single port value
     let port = ports_arg.parse::<u16>();
-    if port.is_ok() {
-        ports.push(port.unwrap());
+    if let Ok(port) = port {
+        ports.push(port);
         return Ok(ports);
     }
 
     // multiple ports given (i.e 80,443,8080)
-    if ports_arg.contains(",") {
+    if ports_arg.contains(',') {
         ports = ports_arg
-            .split(",")
+            .split(',')
             .map(|p| p.parse::<u16>().unwrap())
             .collect();
         return Ok(ports);
     }
 
     // range given (i.e 80-3000)
-    if ports_arg.contains("-") {
-        let parts: Vec<&str> = ports_arg.split("-").collect();
+    if ports_arg.contains('-') {
+        let parts: Vec<&str> = ports_arg.split('-').collect();
         let start = parts[0].parse::<u16>()?;
         let end = parts[1].parse::<u16>()?;
 

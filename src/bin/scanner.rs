@@ -8,20 +8,26 @@ fn main() {
         .version("0.0.1")
         .author("Aloïs Micard <alois@micard.lu>")
         .about("Scan given target to search for open ports")
-        .arg(Arg::with_name("target")
-            .required(true)
-            .value_name("TARGET")
-            .help("address of the target to be scanned"))
-        .arg(Arg::with_name("ports")
-            .required(true)
-            .long("ports")
-            .value_name("PORT(S)")
-            .help("Set the ports to be scanned"))
-        .arg(Arg::with_name("connect-timeout")
-            .long("connect-timeout")
-            .value_name("VALUE")
-            .default_value("500")
-            .help("connect timeout (ms)"))
+        .arg(
+            Arg::with_name("target")
+                .required(true)
+                .value_name("TARGET")
+                .help("address of the target to be scanned"),
+        )
+        .arg(
+            Arg::with_name("ports")
+                .required(true)
+                .long("ports")
+                .value_name("PORT(S)")
+                .help("Set the ports to be scanned"),
+        )
+        .arg(
+            Arg::with_name("connect-timeout")
+                .long("connect-timeout")
+                .value_name("VALUE")
+                .default_value("500")
+                .help("connect timeout (ms)"),
+        )
         .get_matches();
 
     let target = matches.value_of("target").unwrap();
@@ -50,7 +56,7 @@ fn main() {
     }
 }
 
-fn extract_ports(ports_arg: &str) -> Result<Vec<u16>, failure::Error> {
+fn extract_ports(ports_arg: &str) -> anyhow::Result<Vec<u16>> {
     let mut ports: Vec<u16> = Vec::new();
 
     // single port value
@@ -62,7 +68,10 @@ fn extract_ports(ports_arg: &str) -> Result<Vec<u16>, failure::Error> {
 
     // multiple ports given (i.e 80,443,8080)
     if ports_arg.contains(",") {
-        ports = ports_arg.split(",").map(|p| p.parse::<u16>().unwrap()).collect();
+        ports = ports_arg
+            .split(",")
+            .map(|p| p.parse::<u16>().unwrap())
+            .collect();
         return Ok(ports);
     }
 
@@ -79,5 +88,5 @@ fn extract_ports(ports_arg: &str) -> Result<Vec<u16>, failure::Error> {
         return Ok(ports);
     }
 
-    Err(failure::err_msg("Unable to extract ports"))
+    Err(anyhow::anyhow!("Unable to extract ports"))
 }

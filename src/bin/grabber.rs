@@ -1,7 +1,8 @@
 use std::process;
-use std::time::Duration;
 
 use clap::{App, Arg};
+
+use boron::parse_duration;
 
 fn main() {
     let matches = App::new("Grabber")
@@ -39,20 +40,13 @@ fn main() {
 
     let target = matches.value_of("address").unwrap();
 
-    let connect_timeout = matches.value_of("connect-timeout").unwrap();
-    let connect_timeout = connect_timeout.parse::<u64>().unwrap();
-    let connect_timeout = Duration::from_millis(connect_timeout);
-
-    let read_timeout = matches.value_of("read-timeout").unwrap();
-    let read_timeout = read_timeout.parse::<u64>().unwrap();
-    let read_timeout = Duration::from_millis(read_timeout);
-
-    let write_timeout = matches.value_of("write-timeout").unwrap();
-    let write_timeout = write_timeout.parse::<u64>().unwrap();
-    let write_timeout = Duration::from_millis(write_timeout);
+    let connect_timeout = parse_duration(&matches.value_of("connect-timeout"));
+    let read_timeout = parse_duration(&matches.value_of("read-timeout"));
+    let write_timeout = parse_duration(&matches.value_of("write-timeout"));
 
     let banner =
-        match boron::grabbing::grab_banner(target, connect_timeout, read_timeout, write_timeout) {
+        match boron::grabbing::grab_banner(target, &connect_timeout, &read_timeout, &write_timeout)
+        {
             Ok(banner) => banner,
             Err(e) => {
                 eprintln!("Error while grabbing banner: {}", e);

@@ -1,7 +1,8 @@
-use std::process;
-use std::time::Duration;
+use std::{error, process};
 
 use clap::{App, Arg};
+
+use boron::parse_duration;
 
 fn main() {
     let matches = App::new("Scanner")
@@ -33,16 +34,20 @@ fn main() {
     let target = matches.value_of("target").unwrap();
 
     let port_args = matches.value_of("ports").unwrap();
-    let ports = extract_ports(port_args).unwrap();
+    let ports = match parse_ports(port_args) {
+        Ok(ports) => ports,
+        Err(e) => {
+            eprintln!("Error while parsing ports: {}", e);
+            process::exit(1);
+        }
+    };
 
-    let connect_timeout = matches.value_of("connect-timeout").unwrap();
-    let connect_timeout = connect_timeout.parse::<u64>().unwrap();
-    let connect_timeout = Duration::from_millis(connect_timeout);
+    let connect_timeout = parse_duration(&matches.value_of("connect-timeout"));
 
     println!("Scanning target {} on following ports: {:?}", target, ports);
 
     // TODO allow parallel scan?
-    let open_ports = match boron::scanning::scan(target, &ports, connect_timeout) {
+    let open_ports = match boron::scanning::scan(target, &ports, &connect_timeout) {
         Ok(ports) => ports,
         Err(e) => {
             eprintln!("Error while scanning target: {}", e);
@@ -50,13 +55,18 @@ fn main() {
         }
     };
 
+    if open_ports.is_empty() {
+        println!("No open ports found.");
+        return;
+    }
+
     // TODO display closed port?
     for port in open_ports.iter() {
         println!("{}:{} OPEN", target, port)
     }
 }
 
-fn extract_ports(ports_arg: &str) -> anyhow::Result<Vec<u16>> {
+fn parse_ports(ports_arg: &str) -> Result<Vec<u16>, Box<dyn error::Error>> {
     let mut ports: Vec<u16> = Vec::new();
 
     // single port value
@@ -88,5 +98,5 @@ fn extract_ports(ports_arg: &str) -> anyhow::Result<Vec<u16>> {
         return Ok(ports);
     }
 
-    Err(anyhow::anyhow!("Unable to extract ports"))
+    Err(format!("`{}` is not a valid format.", ports_arg).into())
 }

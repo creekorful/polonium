@@ -1,20 +1,33 @@
 use std::io::{ErrorKind, Read, Write};
 use std::net::{SocketAddr, TcpStream};
-use std::str;
 use std::str::FromStr;
 use std::time::Duration;
+use std::{error, str};
 
+use crate::{DEFAULT_CONNECT_TIMEOUT, READ_CONNECT_TIMEOUT, WRITE_CONNECT_TIMEOUT};
+
+/// Grab banner of given target.
+///
+/// # Examples
+///
+/// Try to grab banner of service running on localhost:80
+///
+/// ```no_run
+/// use boron::grabbing::grab_banner;
+/// let banner = grab_banner("127.0.0.1", &None, &None, &None);
+/// ```
 pub fn grab_banner(
     address: &str,
-    connect_timeout: Duration,
-    read_timeout: Duration,
-    write_timeout: Duration,
-) -> anyhow::Result<String> {
+    connect_timeout: &Option<Duration>,
+    read_timeout: &Option<Duration>,
+    write_timeout: &Option<Duration>,
+) -> Result<String, Box<dyn error::Error>> {
     let address = SocketAddr::from_str(address)?;
 
-    let mut stream = TcpStream::connect_timeout(&address, connect_timeout)?;
-    stream.set_read_timeout(Option::from(read_timeout))?;
-    stream.set_write_timeout(Option::from(write_timeout))?;
+    let mut stream =
+        TcpStream::connect_timeout(&address, connect_timeout.unwrap_or(DEFAULT_CONNECT_TIMEOUT))?;
+    stream.set_read_timeout(Option::from(read_timeout.unwrap_or(READ_CONNECT_TIMEOUT)))?;
+    stream.set_write_timeout(Option::from(write_timeout.unwrap_or(WRITE_CONNECT_TIMEOUT)))?;
 
     let mut buffer = [0; 512];
 
@@ -28,7 +41,7 @@ pub fn grab_banner(
     // because we may need to talk first
     let error = result.err().unwrap();
     if error.kind() != ErrorKind::WouldBlock {
-        return Err(anyhow::anyhow!(error));
+        return Err(error.into());
     }
 
     // If nothing was returned, send a dummy request

@@ -43,15 +43,18 @@ fn main() {
     let read_timeout = parse_duration(&matches.value_of("read-timeout"));
     let write_timeout = parse_duration(&matches.value_of("write-timeout"));
 
-    let banner =
-        match polonium::grabbing::grab_banner(target, &connect_timeout, &read_timeout, &write_timeout)
-        {
-            Ok(banner) => banner,
-            Err(e) => {
-                eprintln!("Error while grabbing banner: {}", e);
-                process::exit(1);
-            }
-        };
+    let banner = match polonium::grabbing::grab_banner(
+        target,
+        &connect_timeout,
+        &read_timeout,
+        &write_timeout,
+    ) {
+        Ok(banner) => banner,
+        Err(e) => {
+            eprintln!("Error while grabbing banner: {}", e);
+            process::exit(1);
+        }
+    };
 
     println!("{}", banner);
 }

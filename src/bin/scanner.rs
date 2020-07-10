@@ -2,11 +2,10 @@ use std::{error, process};
 
 use clap::{App, Arg};
 
-use boron::parse_duration;
+use polonium::parse_duration;
 
 fn main() {
     let matches = App::new("Scanner")
-        .version("0.0.1")
         .author("Aloïs Micard <alois@micard.lu>")
         .about("Scan given target to search for open ports")
         .arg(
@@ -47,7 +46,7 @@ fn main() {
     println!("Scanning target {} on following ports: {:?}", target, ports);
 
     // TODO allow parallel scan?
-    let open_ports = match boron::scanning::scan(target, &ports, &connect_timeout) {
+    let open_ports = match polonium::scanning::scan(target, &ports, &connect_timeout) {
         Ok(ports) => ports,
         Err(e) => {
             eprintln!("Error while scanning target: {}", e);

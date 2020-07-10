@@ -2,11 +2,10 @@ use std::process;
 
 use clap::{App, Arg};
 
-use boron::parse_duration;
+use polonium::parse_duration;
 
 fn main() {
     let matches = App::new("Grabber")
-        .version("0.0.1")
         .author("Aloïs Micard <alois@micard.lu>")
         .about("Grab given address to gather banner details")
         .arg(
@@ -45,7 +44,7 @@ fn main() {
     let write_timeout = parse_duration(&matches.value_of("write-timeout"));
 
     let banner =
-        match boron::grabbing::grab_banner(target, &connect_timeout, &read_timeout, &write_timeout)
+        match polonium::grabbing::grab_banner(target, &connect_timeout, &read_timeout, &write_timeout)
         {
             Ok(banner) => banner,
             Err(e) => {

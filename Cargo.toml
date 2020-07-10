@@ -1,11 +1,12 @@
 [package]
-name = "boron"
-version = "0.0.1"
+name = "polonium"
+version = "0.1.0"
 authors = ["Aloïs Micard <alois@micard.lu>"]
 edition = "2018"
 license = "GPL-3.0-only"
-repository = "https://github.com/creekorful/boron"
+repository = "https://github.com/creekorful/polonium"
 readme = "README.md"
+description = "Yet another hacking framework"
 
 [dependencies]
 

@@ -12,7 +12,7 @@ use crate::DEFAULT_CONNECT_TIMEOUT;
 /// Scan localhost on ports 80, 8080:
 ///
 /// ```no_run
-/// use boron::scanning::scan;
+/// use polonium::scanning::scan;
 /// let open_ports = scan("127.0.0.1", &[80, 8080], &None);
 /// ```
 pub fn scan(

@@ -12,7 +12,7 @@ const WRITE_CONNECT_TIMEOUT: Duration = Duration::from_secs(1);
 /// # Examples
 ///
 /// ```
-/// use boron::parse_duration;
+/// use polonium::parse_duration;
 /// use std::time::Duration;
 /// let duration = parse_duration(&Some("42"));
 /// assert_eq!(duration, Some(Duration::from_millis(42)));

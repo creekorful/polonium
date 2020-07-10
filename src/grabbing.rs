@@ -13,8 +13,8 @@ use crate::{DEFAULT_CONNECT_TIMEOUT, READ_CONNECT_TIMEOUT, WRITE_CONNECT_TIMEOUT
 /// Try to grab banner of service running on localhost:80
 ///
 /// ```no_run
-/// use boron::grabbing::grab_banner;
-/// let banner = grab_banner("127.0.0.1", &None, &None, &None);
+/// use polonium::grabbing::grab_banner;
+/// let banner = grab_banner("127.0.0.1:80", &None, &None, &None);
 /// ```
 pub fn grab_banner(
     address: &str,

@@ -7,13 +7,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 
 [[package]]
-name = "boron"
-version = "0.0.1"
-dependencies = [
- "clap",
-]
-
-[[package]]
 name = "clap"
 version = "2.33.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -22,6 +15,13 @@ dependencies = [
  "bitflags",
  "textwrap",
  "unicode-width",
+]
+
+[[package]]
+name = "polonium"
+version = "0.1.0"
+dependencies = [
+ "clap",
 ]
 
 [[package]]

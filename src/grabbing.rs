@@ -1,10 +1,9 @@
 use std::io::{ErrorKind, Read, Write};
-use std::net::{SocketAddr, TcpStream};
-use std::str::FromStr;
+use std::net::TcpStream;
 use std::time::Duration;
 use std::{error, str};
 
-use crate::{DEFAULT_CONNECT_TIMEOUT, READ_CONNECT_TIMEOUT, WRITE_CONNECT_TIMEOUT};
+use crate::{resolve, DEFAULT_CONNECT_TIMEOUT, READ_CONNECT_TIMEOUT, WRITE_CONNECT_TIMEOUT};
 
 /// Grab banner of given target.
 ///
@@ -22,7 +21,7 @@ pub fn grab_banner(
     read_timeout: &Option<Duration>,
     write_timeout: &Option<Duration>,
 ) -> Result<String, Box<dyn error::Error>> {
-    let address = SocketAddr::from_str(address)?;
+    let address = resolve(address)?;
 
     let mut stream =
         TcpStream::connect_timeout(&address, connect_timeout.unwrap_or(DEFAULT_CONNECT_TIMEOUT))?;

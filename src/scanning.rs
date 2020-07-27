@@ -1,9 +1,8 @@
 use std::error;
-use std::net::{SocketAddr, TcpStream};
-use std::str::FromStr;
+use std::net::TcpStream;
 use std::time::Duration;
 
-use crate::DEFAULT_CONNECT_TIMEOUT;
+use crate::{resolve, DEFAULT_CONNECT_TIMEOUT};
 
 /// Scan given address for open ports.
 ///
@@ -13,6 +12,7 @@ use crate::DEFAULT_CONNECT_TIMEOUT;
 ///
 /// ```no_run
 /// use polonium::scanning::scan;
+/// use std::net::SocketAddr;
 /// let open_ports = scan("127.0.0.1", &[80, 8080], &None);
 /// ```
 pub fn scan(
@@ -22,8 +22,7 @@ pub fn scan(
 ) -> Result<Vec<u16>, Box<dyn error::Error>> {
     let mut open_ports: Vec<u16> = Vec::new();
     for port in ports.iter() {
-        let target = format!("{}:{}", address, port);
-        let target = SocketAddr::from_str(&target)?;
+        let target = resolve(&format!("{}:{}", address, port))?;
         if TcpStream::connect_timeout(&target, connect_timeout.unwrap_or(DEFAULT_CONNECT_TIMEOUT))
             .is_ok()
         {

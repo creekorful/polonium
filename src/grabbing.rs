@@ -28,12 +28,12 @@ pub fn grab_banner(
     stream.set_read_timeout(Option::from(read_timeout.unwrap_or(READ_CONNECT_TIMEOUT)))?;
     stream.set_write_timeout(Option::from(write_timeout.unwrap_or(WRITE_CONNECT_TIMEOUT)))?;
 
-    let mut buffer = [0; 512];
+    let mut buffer = Vec::new();
 
     // Try to read banner right after connecting
-    let result = stream.read_exact(&mut buffer);
-    if result.is_ok() {
-        return Ok(String::from(str::from_utf8(&buffer)?));
+    let result = stream.read_to_end(&mut buffer);
+    if result.is_ok() && !buffer.is_empty() {
+        return Ok(String::from_utf8_lossy(&buffer).to_string());
     }
 
     // If timeout related error happens, do not fails
@@ -47,6 +47,6 @@ pub fn grab_banner(
     stream.write_all("HEAD / HTTP/1.1\n\n".as_ref())?;
 
     // Try to read again
-    stream.read_exact(&mut buffer)?;
-    Ok(String::from(str::from_utf8(&buffer)?))
+    stream.read_to_end(&mut buffer)?;
+    Ok(String::from_utf8_lossy(&buffer).to_string())
 }
